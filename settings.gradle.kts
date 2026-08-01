@@ -4,10 +4,6 @@ pluginManagement {
         gradlePluginPortal()
         maven(url = "https://plugins.gradle.org/m2/")
         mavenCentral {
-//            metadataSources {
-//                artifact() // 告訴 Gradle 直接尋找 jar 檔案
-//                // 如果你還想嘗試 pom 但優先順序調整，可以加 mavenPom()
-//            }
         }
         google {
             content {
@@ -61,10 +57,7 @@ val currentJdk = if (versionComponents[0] == 1) versionComponents[1] else versio
 dependencyResolutionManagement {
     repositories {
         mavenCentral {
-            metadataSources {
-                artifact() // 告訴 Gradle 直接尋找 jar 檔案
-                // 如果你還想嘗試 pom 但優先順序調整，可以加 mavenPom()
-            }
+
         }
         google()
         maven {
@@ -72,7 +65,6 @@ dependencyResolutionManagement {
             name = "SonatypeSnapshots"
             mavenContent {
                 snapshotsOnly()
-//                artifact()
             }
         }
         maven(url = "https://jitpack.io")

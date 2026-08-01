@@ -17,9 +17,7 @@ buildscript {
     repositories {
         gradlePluginPortal()
         mavenCentral {
-            metadataSources {
-                artifact() // 關鍵：強制只尋找 JAR 檔案，忽略損毀的 POM 檔案
-            }
+
         }
         google()
         maven {
