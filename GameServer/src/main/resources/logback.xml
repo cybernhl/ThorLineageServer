@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console Appender (A1) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 根據原本 log4j.appender.A1.layout.ConversionPattern=%p - %m%n -->
+            <pattern>%p - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling File Appender (A2) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 根據原本 log4j.appender.A2.File=./loginfo/log4j-Message.log -->
+        <file>./loginfo/log4j-Message.log</file>
+
+        <!-- 根據原本 log4j.appender.A2.Append=false -->
+        <append>false</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>./loginfo/log4j-Message.%i.log</fileNamePattern>
+            <!-- 根據原本 log4j.appender.A2.MaxBackupIndex = 200 -->
+            <minIndex>1</minIndex>
+            <maxIndex>200</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 根據原本 log4j.appender.A2.MaxFileSize = 200KB -->
+            <maxFileSize>200KB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <!-- 根據原本 log4j.appender.A2.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss},%m%n -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss},%m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger Configuration -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

@@ -151,12 +151,13 @@ task runGameServer(type: JavaExec) {
 //TODO call  gradle GameServer:dependencies  find dependencies
 dependencies {
     implementation ("com.mchange:c3p0:0.14.1")
-    implementation ("commons-logging:commons-logging:1.1.1")
+    // implementation ("commons-logging:commons-logging:1.1.1")
     implementation ("com.alibaba:fastjson:1.2.76")
     compileOnly "javax.servlet:javax.servlet-api:3.0.1"
     implementation ("javolution:javolution:5.5.1")
     implementation ("net.java.dev.jna:jna-jpms:5.8.0")
     implementation ("net.java.dev.jna:jna-platform:5.8.0")
+    /*
     implementation("log4j:log4j:1.2.15") {
         //FIXME if use maven will dependencies !!! but lost sun!!
         exclude group: "javax.jms", module: "jms"
@@ -164,13 +165,18 @@ dependencies {
         exclude group: "com.sun.jmx", module: "jmxri"
         // exclude group: "javax.mail", module: "mail"
     }
+    */
 
     implementation ("org.apache.mina:mina-core:2.2.9")
     implementation ("com.mysql:mysql-connector-j:8.4.0")
     implementation ("io.netty:netty:3.6.2.Final")
     implementation "com.github.oshi:oshi-core:5.7.5"
+    // Logging: Bridge everything to SLF4J + Logback
     implementation ("org.slf4j:slf4j-api:2.0.16")
-    implementation ("org.slf4j:slf4j-simple:2.0.16")// 這裡改為 implementation 以便在 runtime 看到日誌
+    implementation ("org.slf4j:jcl-over-slf4j:2.0.16")
+    implementation ("org.slf4j:log4j-over-slf4j:2.0.16")
+    implementation ("ch.qos.logback:logback-classic:1.5.38")
+    // implementation ("org.slf4j:slf4j-simple:2.0.16") // Removed in favor of Logback
 
 
     testImplementation(libs.junit)
