@@ -1,0 +1,204 @@
+plugins {
+    id "application"
+//    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.shadow)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+//kotlin {
+//    compilerOptions {
+//        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+//    }
+//}
+
+application {
+    mainClass.set("com.lineage.Server")
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+
+    }
+}
+
+//FIXME no test !!!
+task runAllatori(type: JavaExec) {
+    group = "obfuscation"
+    description = "Runs Allatori obfuscator"
+
+    // 確保在    jar / shadowJar  任務之後運行
+    dependsOn jar
+    //// 或者
+//    dependsOn shadowJar 如果你想混淆 Fat JAR
+    // Allatori 的主類（通常在 MANIFEST.MF 中指定，如果沒有，需要查閱 Allatori 文檔）
+    // 如果是直接 java -jar allatori.jar，則不需要 mainClass，而是使用 classpath 和 args
+    mainClass = "com.allatori.Obfuscate"//gradle 9 以上要明確指定
+
+    classpath = files("../allatori/allatori.jar") // 指定 Allatori 主類 JAR 的路徑
+
+    // JVM 參數
+    jvmArgs '-Xms1024m', '-Xmx2048m'
+
+    // 傳遞給 Allatori 的參數
+    args "../allatori/config.xml" // 指定 Allatori 配置文件的路徑
+
+    // (可選) 設置工作目錄，如果 config.xml 中的路徑是相對的
+    // workingDir = project.projectDir
+
+    // (重要) 處理輸入和輸出路徑，使其與 Gradle 構建流程協調
+    // 你可能需要在執行此任務前，將 Gradle 生成的 JAR 複製到 config.xml 中 <input> 指定的 'in' 路徑
+    // 或者修改 config.xml 使其指向 Gradle 的輸出路徑
+
+    doFirst {
+        // 示例：假設 jar 任務生成了 build/libs/GameServer-${version}.jar
+        // 並且 config.xml 的 <input> in="in/GameServer.jar"
+        // 你需要確保 'in' 文件夾存在，並將未混淆的 JAR 複製過去
+        def unconfusedJar = tasks.jar.archiveFile.get().asFile
+//        def unconfusedJar = tasks.shadowJar.archiveFile.get().asFile
+        def inputDir = file("in") // 相對於項目根目錄
+        inputDir.mkdirs() // 確保 'in' 文件夾存在
+        copy {
+            from unconfusedJar
+            into inputDir
+            rename { String fileName -> "GameServer.jar" } // 重命名為 config.xml 中期望的名稱
+        }
+        println "Copied ${unconfusedJar.name} to in/GameServer.jar for Allatori"
+    }
+
+    doLast {
+        // (可選) 處理 Allatori 生成的混淆後 JAR，例如將其移動到最終的發布位置
+        // 假設 config.xml 的 <input> out="GameServer.jar" (輸出到項目根目錄)
+        // 你可能想將它複製到 build/libs/GameServer-obfuscated.jar
+        def obfuscatedJarName = "GameServer.jar" // 根據 config.xml 的 out 屬性
+        // def finalLibsDir = file("$buildDir/libs")
+        def finalRuntimeDir = rootProject.file("runtime")
+        if (file(obfuscatedJarName).exists()) {
+            /*
+            copy {
+                from obfuscatedJarName
+                into finalLibsDir
+                rename { String fileName -> "GameServer-${project.version}-obfuscated.jar" }
+            }
+            */
+            copy {
+                from obfuscatedJarName
+                into finalRuntimeDir
+                rename { String fileName -> "GameServer.jar" }
+            }
+            delete(obfuscatedJarName) // 刪除在項目根目錄的臨時輸出
+            println "Allatori obfuscation complete. Output: ${finalRuntimeDir}/GameServer.jar"
+            // println "Allatori obfuscation complete. Output: ${finalLibsDir}/GameServer-${project.version}-obfuscated.jar"
+        } else {
+            println "Allatori output JAR not found: ${obfuscatedJarName}"
+        }
+    }
+}
+
+// 建立一個單純搬運未混淆 JAR 到 runtime 的任務
+task prepareRuntimeJar(type: Copy) {
+    dependsOn jar
+    from tasks.jar.archiveFile
+    //// 或者 shadowJar
+//    dependsOn shadowJar
+//    from tasks.shadowJar.archiveFile
+    into rootProject.file("runtime")
+    rename { "GameServer.jar" }
+}
+
+task runGameServer(type: JavaExec) {
+    group = "testing"
+    description = "Runs the obfuscated GameServer from the runtime directory"
+
+    // 確保在混淆任務完成後執行
+    dependsOn runAllatori
+    // 如果要【直接】運行 (不混淆)：
+    // dependsOn prepareRuntimeJar
+
+    // 設置工作目錄為專案根目錄下的 runtime
+    def runtimeDir = rootProject.file("runtime")
+    workingDir = runtimeDir
+
+    mainClass = "com.lineage.Server"
+
+    // 讀取混淆後的 JAR 作為 classpath
+    classpath = files("${runtimeDir}/GameServer.jar")
+
+    // 參考 Run_GameServer.bat 的 JVM 參數
+    jvmArgs '-Xms512m', '-Xmx1024m'
+
+    // 標準輸出與錯誤輸出（可選，如需像 bat 一樣輸出到檔案可自行調整）
+    // standardOutput = new FileOutputStream(file("${runtimeDir}/server_output.log"))
+
+    doFirst {
+        println "Starting Obfuscated GameServer from ${runtimeDir}..."
+        
+        // --- 預留區：將外部檔案放入 runtime 內的 sub folder ---
+        // 例如：
+        /*
+        copy {
+            from "some/external/path"
+            into "${runtimeDir}/Config"
+        }
+        */
+        // --------------------------------------------------
+    }
+}
+
+//TODO call  gradle GameServer:dependencies  find dependencies
+dependencies {
+    //FIXME  JavaFx ?? if use  Java 1.8 use local jar over 11 can use maven ( but error !! sun.misc.BASE64Encoder)
+    //FIXME only for "javafx.util.Pair"
+    implementation(project(":javafx"))//https://mvnrepository.com/artifact/org.openjfx & https://mvnrepository.com/artifact/org.openjfx/javafx-base
+//    implementation 'org.openjfx:javafx-base:11'
+//    //FIXME  1. local jar mapping --> pass build  2.for safe may upgrade !!
+//    // 使用本地 JAR 映射專案，確保編譯通過與運行一致
+//    implementation(project(":c3p0"))//FIXME https://blog.csdn.net/qq_44778023/article/details/109473676
+//    implementation(project(":commons_logging"))//https://mvnrepository.com/artifact/commons-logging/commons-logging/1.1.1
+//    implementation(project(":fastjson"))//https://mvnrepository.com/artifact/com.alibaba/fastjson/1.2.76
+//    implementation(project(":javac"))
+//    compileOnly(project(":javax_servlet_api"))//https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api/3.0.1
+//    implementation(project(":javolution"))//https://mvnrepository.com/artifact/javolution/javolution/5.5.1
+//    implementation(project(":jna_jpms"))//https://mvnrepository.com/artifact/net.java.dev.jna/jna-jpms/5.8.0
+//    implementation(project(":jna_platform"))// https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
+//    //FIXME  jsr166.jar (just for java 1.5 / 1.6 !! for "concurrent" ) maybe not need over Java 1.8
+//    implementation(project(":jsr"))//https://stackoverflow.com/questions/45236711/where-can-i-download-jsr-166-for-java-8 & https://blog.csdn.net/weixin_42695485/article/details/109790877
+//    implementation(project(":log4j"))//https://mvnrepository.com/artifact/log4j/log4j/1.2.15
+//    implementation(project(":mina_core"))//https://mvnrepository.com/artifact/org.apache.mina/mina-core/2.2.2
+//    implementation(project(":mysql_connector"))//https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.15
+//    implementation(project(":netty"))//https://mvnrepository.com/artifact/io.netty/netty/3.6.2.Final
+//    implementation(project(":oshi_core"))
+//    implementation(project(":slf4j_api"))
+//    implementation(project(":slf4j_simple")) // 這裡改為 implementation 以便在 runtime 看到日誌
+
+
+    ////Use maven
+    implementation ("com.mchange:c3p0:0.9.2.1")
+//    implementation ("com.mchange:c3p0:0.9.2.1")
+    implementation ("commons-logging:commons-logging:1.1.1")
+    implementation ("com.alibaba:fastjson:1.2.76")
+    compileOnly "javax.servlet:javax.servlet-api:3.0.1"
+    implementation ("javolution:javolution:5.5.1")
+    implementation ("net.java.dev.jna:jna-jpms:5.8.0")
+    implementation ("net.java.dev.jna:jna-platform:5.8.0")
+    implementation("log4j:log4j:1.2.15") {
+        //FIXME if use maven will dependencies !!! but lost sun!!
+        exclude group: "javax.jms", module: "jms"
+        exclude group: "com.sun.jdmk", module: "jmxtools"
+        exclude group: "com.sun.jmx", module: "jmxri"
+        // exclude group: "javax.mail", module: "mail"
+    }
+
+    implementation ("org.apache.mina:mina-core:2.2.2")
+    implementation ("mysql:mysql-connector-java:5.1.15")
+    implementation ("io.netty:netty:3.6.2.Final")
+    implementation "com.github.oshi:oshi-core:5.7.5"
+    implementation ("org.slf4j:slf4j-api:1.7.36@jar")
+    implementation ("org.slf4j:slf4j-simple:1.7.36@jar")// 這裡改為 implementation 以便在 runtime 看到日誌
+
+
+    testImplementation(libs.junit)
+}

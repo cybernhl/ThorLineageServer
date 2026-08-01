@@ -1,0 +1,6 @@
+[submodule "allatori_annotations"]
+	path = allatori_annotations
+	url = git@github.com:cybernhl/allatori_annotations.git
+[submodule "allatori"]
+	path = allatori
+	url = git@github.com:cybernhl/allatori.git

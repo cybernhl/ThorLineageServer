@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('../GameServer/libs/c3p0-0.9.1.2.jar'))
