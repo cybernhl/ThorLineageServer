@@ -165,7 +165,7 @@ dependencies {
         // exclude group: "javax.mail", module: "mail"
     }
 
-    implementation ("org.apache.mina:mina-core:2.2.2")
+    implementation ("org.apache.mina:mina-core:2.2.9")
     implementation ("mysql:mysql-connector-java:5.1.15")
     implementation ("io.netty:netty:3.6.2.Final")
     implementation "com.github.oshi:oshi-core:5.7.5"
