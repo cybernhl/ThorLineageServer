@@ -89,28 +89,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ThorLineageServer"
-//lost
-//FIXME Java 1.8 ? use JavaFx
-include(":javafx")//FIXME IDEA use "openjdk lost JavaFX!! if use jdk-8u231-windows-x64.exe not need"
-//FIXME very old library !! the way let "*.jar" as sub-project let other project use/dependencies it
-//include(":allatori")//FIXME Ref : https://blog.csdn.net/Viviha/article/details/104801930
-//include(":allatori_annotations")//FIXME Ref : https://blog.csdn.net/Viviha/article/details/104801930
-include(":c3p0")
-include(":commons_logging")
-include(":fastjson")
-include(":javac")
-include(":javax_servlet_api")
-include(":javolution")
-include(":jna_jpms")
-include(":jna_platform")
-include(":jsr")
-include(":log4j")
-include(":mina_core")
-include(":mysql_connector")
-include(":netty")
-include(":oshi_core")
-include(":slf4j_api")
-include(":slf4j_simple")
 //Application
 include(":GameServer")
 

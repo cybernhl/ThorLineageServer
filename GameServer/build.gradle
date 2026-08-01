@@ -150,34 +150,7 @@ task runGameServer(type: JavaExec) {
 
 //TODO call  gradle GameServer:dependencies  find dependencies
 dependencies {
-    //FIXME  JavaFx ?? if use  Java 1.8 use local jar over 11 can use maven ( but error !! sun.misc.BASE64Encoder)
-    //FIXME only for "javafx.util.Pair"
-    implementation(project(":javafx"))//https://mvnrepository.com/artifact/org.openjfx & https://mvnrepository.com/artifact/org.openjfx/javafx-base
-//    implementation 'org.openjfx:javafx-base:11'
-//    //FIXME  1. local jar mapping --> pass build  2.for safe may upgrade !!
-//    // 使用本地 JAR 映射專案，確保編譯通過與運行一致
-//    implementation(project(":c3p0"))//FIXME https://blog.csdn.net/qq_44778023/article/details/109473676
-//    implementation(project(":commons_logging"))//https://mvnrepository.com/artifact/commons-logging/commons-logging/1.1.1
-//    implementation(project(":fastjson"))//https://mvnrepository.com/artifact/com.alibaba/fastjson/1.2.76
-//    implementation(project(":javac"))
-//    compileOnly(project(":javax_servlet_api"))//https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api/3.0.1
-//    implementation(project(":javolution"))//https://mvnrepository.com/artifact/javolution/javolution/5.5.1
-//    implementation(project(":jna_jpms"))//https://mvnrepository.com/artifact/net.java.dev.jna/jna-jpms/5.8.0
-//    implementation(project(":jna_platform"))// https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-//    //FIXME  jsr166.jar (just for java 1.5 / 1.6 !! for "concurrent" ) maybe not need over Java 1.8
-//    implementation(project(":jsr"))//https://stackoverflow.com/questions/45236711/where-can-i-download-jsr-166-for-java-8 & https://blog.csdn.net/weixin_42695485/article/details/109790877
-//    implementation(project(":log4j"))//https://mvnrepository.com/artifact/log4j/log4j/1.2.15
-//    implementation(project(":mina_core"))//https://mvnrepository.com/artifact/org.apache.mina/mina-core/2.2.2
-//    implementation(project(":mysql_connector"))//https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.15
-//    implementation(project(":netty"))//https://mvnrepository.com/artifact/io.netty/netty/3.6.2.Final
-//    implementation(project(":oshi_core"))
-//    implementation(project(":slf4j_api"))
-//    implementation(project(":slf4j_simple")) // 這裡改為 implementation 以便在 runtime 看到日誌
-
-
-    ////Use maven
     implementation ("com.mchange:c3p0:0.9.2.1")
-//    implementation ("com.mchange:c3p0:0.9.2.1")
     implementation ("commons-logging:commons-logging:1.1.1")
     implementation ("com.alibaba:fastjson:1.2.76")
     compileOnly "javax.servlet:javax.servlet-api:3.0.1"
