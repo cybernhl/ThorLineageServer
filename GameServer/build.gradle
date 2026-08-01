@@ -153,14 +153,13 @@ dependencies {
     implementation ("com.mchange:c3p0:0.14.1")
 //    implementation ("com.alibaba:fastjson:1.2.76") // Replaced by internal secure shim
     compileOnly "javax.servlet:javax.servlet-api:4.0.1"
-//    implementation ("javolution:javolution:5.5.1")
-    implementation ("net.java.dev.jna:jna-jpms:5.8.0")
-    implementation ("net.java.dev.jna:jna-platform:5.8.0")
+    implementation ("net.java.dev.jna:jna-jpms:5.16.0")
+    implementation ("net.java.dev.jna:jna-platform:5.16.0")
 
     implementation ("org.apache.mina:mina-core:2.2.9")
     implementation ("com.mysql:mysql-connector-j:8.4.0")
     implementation ("io.netty:netty:3.6.2.Final")
-    implementation "com.github.oshi:oshi-core:5.7.5"
+    implementation "com.github.oshi:oshi-core:7.4.2"
     // Logging: Bridge everything to SLF4J + Logback
     implementation ("org.slf4j:slf4j-api:2.0.16")
     implementation ("org.slf4j:jcl-over-slf4j:2.0.16")
