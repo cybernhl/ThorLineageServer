@@ -152,8 +152,8 @@ task runGameServer(type: JavaExec) {
 dependencies {
     implementation ("com.mchange:c3p0:0.14.1")
 //    implementation ("com.alibaba:fastjson:1.2.76") // Replaced by internal secure shim
-    compileOnly "javax.servlet:javax.servlet-api:3.0.1"
-    implementation ("javolution:javolution:5.5.1")
+    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+//    implementation ("javolution:javolution:5.5.1")
     implementation ("net.java.dev.jna:jna-jpms:5.8.0")
     implementation ("net.java.dev.jna:jna-platform:5.8.0")
 
