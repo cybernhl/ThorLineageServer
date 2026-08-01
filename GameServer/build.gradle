@@ -151,21 +151,11 @@ task runGameServer(type: JavaExec) {
 //TODO call  gradle GameServer:dependencies  find dependencies
 dependencies {
     implementation ("com.mchange:c3p0:0.14.1")
-    // implementation ("commons-logging:commons-logging:1.1.1")
-    implementation ("com.alibaba:fastjson:1.2.76")
+//    implementation ("com.alibaba:fastjson:1.2.76") // Replaced by internal secure shim
     compileOnly "javax.servlet:javax.servlet-api:3.0.1"
     implementation ("javolution:javolution:5.5.1")
     implementation ("net.java.dev.jna:jna-jpms:5.8.0")
     implementation ("net.java.dev.jna:jna-platform:5.8.0")
-    /*
-    implementation("log4j:log4j:1.2.15") {
-        //FIXME if use maven will dependencies !!! but lost sun!!
-        exclude group: "javax.jms", module: "jms"
-        exclude group: "com.sun.jdmk", module: "jmxtools"
-        exclude group: "com.sun.jmx", module: "jmxri"
-        // exclude group: "javax.mail", module: "mail"
-    }
-    */
 
     implementation ("org.apache.mina:mina-core:2.2.9")
     implementation ("com.mysql:mysql-connector-j:8.4.0")
@@ -175,9 +165,8 @@ dependencies {
     implementation ("org.slf4j:slf4j-api:2.0.16")
     implementation ("org.slf4j:jcl-over-slf4j:2.0.16")
     implementation ("org.slf4j:log4j-over-slf4j:2.0.16")
-    implementation ("ch.qos.logback:logback-classic:1.5.38")
+    implementation ("ch.qos.logback:logback-classic:1.2.13")
     // implementation ("org.slf4j:slf4j-simple:2.0.16") // Removed in favor of Logback
-
 
     testImplementation(libs.junit)
 }
