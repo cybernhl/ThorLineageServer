@@ -35,6 +35,12 @@
 - **安全性**：徹底移除有漏洞的 `log4j:log4j:1.2.15`。
 - **配置統一**：由單一的 `logback.xml` 替代零散的 `.properties` 檔案。
 
+### 3.4 版本相容性注意 (Java 1.8 限制)
+在實作遷移時，必須嚴格遵守 Java 版本的依賴限制：
+- **Logback 1.3.x / 1.4.x / 1.5.x**：這些版本需要 **Java 11 或更高版本**。
+- **Java 1.8 環境**：必須使用 **Logback 1.2.x** 系列（建議為 **1.2.13**）。
+- **風險**：若在 Java 1.8 下誤用 1.5.x 版本，將導致 `UnsupportedClassVersionError` 或類別載入失敗。
+
 ## 4. 深層掃描結果 (Deep Scan Results)
 - **自定義擴展**：**無**。專案未繼承 Log4j 內部類別，相容性 100%。
 - **配置調用**：`com.lineage.Server.java` 第 121 行。
