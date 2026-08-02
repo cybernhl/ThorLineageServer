@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactory;
+import com.lineage.server.datatables.mappers.ExpMapper;
 import com.lineage.server.templates.L1Exp;
 import com.lineage.server.utils.PerformanceTimer;
 import com.lineage.server.utils.SQLUtil;
@@ -51,9 +52,9 @@ public final class ExpTable {
 
 			L1Exp l1exp;
 			while (rs.next()) {
-				final int level = rs.getInt("level");
-				final long exp = rs.getLong("exp");
-				final double expPenalty = rs.getDouble("expPenalty");
+				l1exp = ExpMapper.get().mapRow(rs);
+				final int level = l1exp.get_level();
+				final long exp = l1exp.get_exp();
 				
 				if (level > MAX_LEVEL) {
 					MAX_LEVEL = level;
@@ -62,11 +63,6 @@ public final class ExpTable {
 //					MAX_EXP = exp;
 					MAX_EXP = (long) (getExpByLevel(ConfigCharSetting.MAX_LEVEL) + (ExpTable.getNeedExpNextLevel(ConfigCharSetting.MAX_LEVEL) * 0.05));
 				}
-				
-				l1exp = new L1Exp();
-				l1exp.set_level(level);
-				l1exp.set_exp(exp);
-				l1exp.set_expPenalty(expPenalty);
 				
 				_expList.put(new Integer(level), l1exp);
 			}

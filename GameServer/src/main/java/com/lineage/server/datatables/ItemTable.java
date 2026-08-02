@@ -17,6 +17,7 @@ import com.lineage.data.ItemClass;
 import com.lineage.data.item_armor.set.ArmorSet;
 import com.lineage.server.IdFactory;
 import com.lineage.server.model.Instance.L1ItemInstance;
+import com.lineage.server.datatables.mappers.ItemMapper;
 import com.lineage.server.templates.L1Item;
 import com.lineage.server.templates.L1ItemsArmor;
 import com.lineage.server.templates.L1ItemsEtcItem;
@@ -278,48 +279,16 @@ private static Map<Integer, L1ItemsArmor> _itemsarmor1;
 			pstm = con.prepareStatement("SELECT * FROM `etcitem`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				item = new L1ItemsEtcItem();
-				final int itemid = rs.getInt("item_id");
-				item.setItemId(itemid);
-				item.setName(rs.getString("name"));
-				final String classname = rs.getString("classname");
-				item.setClassname(classname);
-				item.setNameId(rs.getString("name_id"));
+				item = ItemMapper.get().mapEtcItem(rs);
+				final int itemid = item.getItemId();
+				
+				// 處理映射類型
 				item.setType((_etcItemTypes.get(rs.getString("item_type"))).intValue());
 				item.setUseType(_useTypes.get(rs.getString("use_type")).intValue());
-				item.setType2(0);
 				item.setMaterial((_materialTypes.get(rs.getString("material"))).intValue());
-				item.setWeight(rs.getInt("weight"));
-				item.setGfxId(rs.getInt("invgfx"));
-				item.setGroundGfxId(rs.getInt("grdgfx"));
-				item.setItemDescId(rs.getInt("itemdesc_id"));
-				item.setMinLevel(rs.getInt("min_lvl"));
-				item.setMaxLevel(rs.getInt("max_lvl"));
-				item.setBless(rs.getInt("bless"));
-				item.setTradable(rs.getInt("trade") == 0 ? true : false);
-				item.setCantDelete(rs.getInt("cant_delete") == 1 ? true : false);
-				item.setDmgSmall(rs.getInt("dmg_small"));
-				item.setDmgLarge(rs.getInt("dmg_large"));
-				item.set_stackable(rs.getInt("stackable") == 1 ? true : false);
-				item.setMaxChargeCount(rs.getInt("max_charge_count"));
 
-				item.set_delayid(rs.getInt("delay_id"));
-				item.set_delaytime(rs.getInt("delay_time"));
-				item.set_delayEffect(rs.getInt("delay_effect"));
-				item.setFoodVolume(rs.getInt("food_volume"));
-				item.setToBeSavedAtOnce((rs.getInt("save_at_once") == 1) ? true : false);			
-				item.setQuality1(rs.getString("Quality1"));
-				item.setQuality2(rs.getString("Quality2"));
-				item.setQuality3(rs.getString("Quality3"));
-				item.setQuality4(rs.getString("Quality4"));
-				item.setQuality5(rs.getString("Quality5"));
-				item.setQuality6(rs.getString("Quality6"));
-				item.setQuality7(rs.getString("Quality7"));
-				item.setQuality8(rs.getString("Quality8"));
-				item.setQuality9(rs.getString("Quality9"));
-				item.setQuality10(rs.getString("Quality10"));
-				ItemClass.get().addList(itemid, classname, 0);
-				result.put(new Integer(item.getItemId()), item);
+				ItemClass.get().addList(itemid, item.getclassname(), 0);
+				result.put(new Integer(itemid), item);
 			}
 		} catch (final NullPointerException e) {
 			_log.error("加載失敗: " + item.getItemId(), e);
@@ -351,59 +320,16 @@ private static Map<Integer, L1ItemsArmor> _itemsarmor1;
 			pstm = con.prepareStatement("SELECT * FROM `weapon`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				weapon = new L1ItemsWeapon();
-				final int itemid = rs.getInt("item_id");
-				weapon.setItemId(itemid);
-				weapon.setName(rs.getString("name"));
-				final String classname = rs.getString("classname");
-				weapon.setClassname(classname);
-				weapon.setNameId(rs.getString("name_id"));
+				weapon = ItemMapper.get().mapWeapon(rs);
+				final int itemid = weapon.getItemId();
+				
+				// 處理映射類型
 				weapon.setType((_weaponTypes.get(rs.getString("type"))).intValue());
 				weapon.setType1((_weaponId.get(rs.getString("type"))).intValue());
-				weapon.setType2(1);
-				weapon.setUseType(1);
 				weapon.setMaterial((_materialTypes.get(rs.getString("material"))).intValue());
-				weapon.setWeight(rs.getInt("weight"));
-				weapon.setGfxId(rs.getInt("invgfx"));
-				weapon.setGroundGfxId(rs.getInt("grdgfx"));
-				weapon.setItemDescId(rs.getInt("itemdesc_id"));
-				weapon.setDmgSmall(rs.getInt("dmg_small"));
-				weapon.setDmgLarge(rs.getInt("dmg_large"));
-				weapon.setRange(rs.getInt("range"));
-				weapon.set_safeenchant(rs.getInt("safenchant"));
-				weapon.setUseRoyal(rs.getInt("use_royal") == 0 ? false : true);
-				weapon.setUseKnight(rs.getInt("use_knight") == 0 ? false : true);
-				weapon.setUseElf(rs.getInt("use_elf") == 0 ? false : true);
-				weapon.setUseMage(rs.getInt("use_mage") == 0 ? false : true);
-				weapon.setUseDarkelf(rs.getInt("use_darkelf") == 0 ? false : true);
-				weapon.setHitModifier(rs.getInt("hitmodifier"));
-				weapon.setDmgModifier(rs.getInt("dmgmodifier"));
-				weapon.set_addstr(rs.getByte("add_str"));
-				weapon.set_adddex(rs.getByte("add_dex"));
-				weapon.set_addcon(rs.getByte("add_con"));
-				weapon.set_addint(rs.getByte("add_int"));
-				weapon.set_addwis(rs.getByte("add_wis"));
-				weapon.set_addcha(rs.getByte("add_cha"));
-				weapon.set_addhp(rs.getInt("add_hp"));
-				weapon.set_addmp(rs.getInt("add_mp"));
-				weapon.set_addhpr(rs.getInt("add_hpr"));
-				weapon.set_addmpr(rs.getInt("add_mpr"));
-				weapon.set_addsp(rs.getInt("add_sp"));
-				weapon.set_mdef(rs.getInt("m_def"));
-				weapon.setDoubleDmgChance(rs.getInt("double_dmg_chance"));
-				weapon.setMagicDmgModifier(rs.getInt("magicdmgmodifier"));
-				weapon.set_canbedmg(rs.getInt("canbedmg"));
-				weapon.setMinLevel(rs.getInt("min_lvl"));
-				weapon.setMaxLevel(rs.getInt("max_lvl"));
-				weapon.setBless(rs.getInt("bless"));
-				weapon.setTradable(rs.getInt("trade") == 0 ? true : false);
-				weapon.setCantDelete(rs.getInt("cant_delete") == 1 ? true : false);
-				weapon.setHasteItem(rs.getInt("haste_item") == 0 ? false : true);
-				weapon.setMaxUseTime(rs.getInt("max_use_time"));
-				weapon.set_isItemAttr(rs.getInt("isItemAttr"));
-				weapon.setAbility(rs.getInt("ability"));
-				ItemClass.get().addList(itemid, classname, 1);
-				result.put(new Integer(weapon.getItemId()), weapon);
+
+				ItemClass.get().addList(itemid, weapon.getclassname(), 1);
+				result.put(new Integer(itemid), weapon);
 			}
 		} catch (final NullPointerException e) {
 			_log.error("加載失敗: " + weapon.getItemId(), e);
@@ -431,59 +357,16 @@ private static Map<Integer, L1ItemsArmor> _itemsarmor1;
 			pstm = con.prepareStatement("SELECT * FROM `weapon_bless`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				weapon = new L1ItemsWeapon();
-				final int itemid = rs.getInt("item_id");
-				weapon.setItemId(itemid);
-				weapon.setName(rs.getString("name"));
-				final String classname = rs.getString("classname");
-				weapon.setClassname(classname);
-				weapon.setNameId(rs.getString("name_id"));
+				weapon = ItemMapper.get().mapWeapon(rs);
+				final int itemid = weapon.getItemId();
+				
+				// 處理映射類型
 				weapon.setType((_weaponTypes.get(rs.getString("type"))).intValue());
 				weapon.setType1((_weaponId.get(rs.getString("type"))).intValue());
-				weapon.setType2(1);
-				weapon.setUseType(1);
 				weapon.setMaterial((_materialTypes.get(rs.getString("material"))).intValue());
-				weapon.setWeight(rs.getInt("weight"));
-				weapon.setGfxId(rs.getInt("invgfx"));
-				weapon.setGroundGfxId(rs.getInt("grdgfx"));
-				weapon.setItemDescId(rs.getInt("itemdesc_id"));
-				weapon.setDmgSmall(rs.getInt("dmg_small"));
-				weapon.setDmgLarge(rs.getInt("dmg_large"));
-				weapon.setRange(rs.getInt("range"));
-				weapon.set_safeenchant(rs.getInt("safenchant"));
-				weapon.setUseRoyal(rs.getInt("use_royal") == 0 ? false : true);
-				weapon.setUseKnight(rs.getInt("use_knight") == 0 ? false : true);
-				weapon.setUseElf(rs.getInt("use_elf") == 0 ? false : true);
-				weapon.setUseMage(rs.getInt("use_mage") == 0 ? false : true);
-				weapon.setUseDarkelf(rs.getInt("use_darkelf") == 0 ? false : true);
-				weapon.setHitModifier(rs.getInt("hitmodifier"));
-				weapon.setDmgModifier(rs.getInt("dmgmodifier"));
-				weapon.set_addstr(rs.getByte("add_str"));
-				weapon.set_adddex(rs.getByte("add_dex"));
-				weapon.set_addcon(rs.getByte("add_con"));
-				weapon.set_addint(rs.getByte("add_int"));
-				weapon.set_addwis(rs.getByte("add_wis"));
-				weapon.set_addcha(rs.getByte("add_cha"));
-				weapon.set_addhp(rs.getInt("add_hp"));
-				weapon.set_addmp(rs.getInt("add_mp"));
-				weapon.set_addhpr(rs.getInt("add_hpr"));
-				weapon.set_addmpr(rs.getInt("add_mpr"));
-				weapon.set_addsp(rs.getInt("add_sp"));
-				weapon.set_mdef(rs.getInt("m_def"));
-				weapon.setDoubleDmgChance(rs.getInt("double_dmg_chance"));
-				weapon.setMagicDmgModifier(rs.getInt("magicdmgmodifier"));
-				weapon.set_canbedmg(rs.getInt("canbedmg"));
-				weapon.setMinLevel(rs.getInt("min_lvl"));
-				weapon.setMaxLevel(rs.getInt("max_lvl"));
-				weapon.setBless(rs.getInt("bless"));
-				weapon.setTradable(rs.getInt("trade") == 0 ? true : false);
-				weapon.setCantDelete(rs.getInt("cant_delete") == 1 ? true : false);
-				weapon.setHasteItem(rs.getInt("haste_item") == 0 ? false : true);
-				weapon.setMaxUseTime(rs.getInt("max_use_time"));
-				weapon.set_isItemAttr(rs.getInt("isItemAttr"));
-				weapon.setAbility(rs.getInt("ability"));
-				ItemClass.get().addList(itemid, classname, 1);
-				result.put(new Integer(weapon.getItemId()), weapon);
+
+				ItemClass.get().addList(itemid, weapon.getclassname(), 1);
+				result.put(new Integer(itemid), weapon);
 			}
 		} catch (final NullPointerException e) {
 			_log.error("加載失敗: " + weapon.getItemId(), e);
@@ -514,79 +397,32 @@ private static Map<Integer, L1ItemsArmor> _itemsarmor1;
 			pstm = con.prepareStatement("SELECT * FROM `armor`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				armor = new L1ItemsArmor();
-				final int itemid = rs.getInt("item_id");
-				armor.setItemId(itemid);
-				armor.setName(rs.getString("name"));
-				final String classname = rs.getString("classname");
-				armor.setClassname(classname);
-				armor.setNameId(rs.getString("name_id"));
-				if (_armorTypes.containsKey(rs.getString("type"))) {
-					armor.setType((_armorTypes.get(rs.getString("type"))).intValue());
+				armor = ItemMapper.get().mapArmor(rs);
+				final int itemid = armor.getItemId();
+				
+				final String typeStr = rs.getString("type");
+				// 處理 Type 映射
+				if (_armorTypes.containsKey(typeStr)) {
+					armor.setType((_armorTypes.get(typeStr))).intValue();
 				} else {
-					if (rs.getString("type").contains("aid_custom_")) {
-						armor.setType(Integer.parseInt(rs.getString("type").replaceAll("aid_custom_", "")) + 0x7FFF);
+					if (typeStr.contains("aid_custom_")) {
+						armor.setType(Integer.parseInt(typeStr.replaceAll("aid_custom_", "")) + 0x7FFF);
 					}
 				}
-				armor.setType2(2);
-				if (_useTypes.containsKey(rs.getString("type"))) {
-					armor.setUseType((_useTypes.get(rs.getString("type"))).intValue());
+				
+				// 處理 UseType 映射
+				if (_useTypes.containsKey(typeStr)) {
+					armor.setUseType((_useTypes.get(typeStr))).intValue();
 				} else {
-					if (rs.getString("type").contains("aid_custom_")) {
-						armor.setUseType(Integer.parseInt(rs.getString("type").replaceAll("aid_custom_", "")) + 0x7FFF);
+					if (typeStr.contains("aid_custom_")) {
+						armor.setUseType(Integer.parseInt(typeStr.replaceAll("aid_custom_", "")) + 0x7FFF);
 					}
 				}
+				
 				armor.setMaterial((_materialTypes.get(rs.getString("material"))).intValue());
-				armor.setWeight(rs.getInt("weight"));
-				armor.setGfxId(rs.getInt("invgfx"));
-				armor.setGroundGfxId(rs.getInt("grdgfx"));
-				armor.setItemDescId(rs.getInt("itemdesc_id"));
-				armor.set_ac(rs.getInt("ac"));
-				armor.set_safeenchant(rs.getInt("safenchant"));
-				armor.setUseRoyal(rs.getInt("use_royal") == 0 ? false : true);
-				armor.setUseKnight(rs.getInt("use_knight") == 0 ? false : true);
-				armor.setUseElf(rs.getInt("use_elf") == 0 ? false : true);
-				armor.setUseMage(rs.getInt("use_mage") == 0 ? false : true);
-				armor.setUseDarkelf(rs.getInt("use_darkelf") == 0 ? false : true);
-				armor.set_addstr(rs.getByte("add_str"));
-				armor.set_addcon(rs.getByte("add_con"));
-				armor.set_adddex(rs.getByte("add_dex"));
-				armor.set_addint(rs.getByte("add_int"));
-				armor.set_addwis(rs.getByte("add_wis"));
-				armor.set_addcha(rs.getByte("add_cha"));
-				armor.set_addhp(rs.getInt("add_hp"));
-				armor.set_addmp(rs.getInt("add_mp"));
-				armor.set_addhpr(rs.getInt("add_hpr"));
-				armor.set_addmpr(rs.getInt("add_mpr"));
-				armor.set_addsp(rs.getInt("add_sp"));
-				armor.setMinLevel(rs.getInt("min_lvl"));
-				armor.setMaxLevel(rs.getInt("max_lvl"));
-				armor.set_mdef(rs.getInt("m_def"));
-				armor.setDamageReduction(rs.getInt("damage_reduction"));
-				armor.setWeightReduction(rs.getInt("weight_reduction"));
-				armor.setHitModifierByArmor(rs.getInt("hit_modifier"));
-				armor.setDmgModifierByArmor(rs.getInt("dmg_modifier"));
-				armor.setBowHitModifierByArmor(rs.getInt("bow_hit_modifier"));
-				armor.setBowDmgModifierByArmor(rs.getInt("bow_dmg_modifier"));
-				armor.setHasteItem(rs.getInt("haste_item") == 0 ? false : true);
-				armor.setBless(rs.getInt("bless"));
-				armor.setTradable(rs.getInt("trade") == 0 ? true : false);
-				armor.setCantDelete(rs.getInt("cant_delete") == 1 ? true : false);
-				armor.set_defense_earth(rs.getInt("defense_earth"));
-				armor.set_defense_water(rs.getInt("defense_water"));
-				armor.set_defense_wind(rs.getInt("defense_wind"));
-				armor.set_defense_fire(rs.getInt("defense_fire"));
-				armor.set_regist_stun(rs.getInt("regist_stun"));
-				armor.set_regist_stone(rs.getInt("regist_stone"));
-				armor.set_regist_sleep(rs.getInt("regist_sleep"));
-				armor.set_regist_freeze(rs.getInt("regist_freeze"));
-				armor.set_regist_sustain(rs.getInt("regist_sustain"));
-				armor.set_regist_blind(rs.getInt("regist_blind"));
-				armor.setMaxUseTime(rs.getInt("max_use_time"));
-				armor.set_isItemAttr(rs.getInt("isItemAttr"));
-				armor.setAbility(rs.getInt("ability"));
-				ItemClass.get().addList(itemid, classname, 2);
-				result.put(new Integer(armor.getItemId()), armor);
+
+				ItemClass.get().addList(itemid, armor.getclassname(), 2);
+				result.put(new Integer(itemid), armor);
 			}
 		} catch (final NullPointerException e) {
 			_log.error("加載失敗: " + armor.getItemId(), e);
@@ -613,79 +449,32 @@ private static Map<Integer, L1ItemsArmor> _itemsarmor1;
 			pstm = con.prepareStatement("SELECT * FROM `armor_bless`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				armor = new L1ItemsArmor();
-				final int itemid = rs.getInt("item_id");
-				armor.setItemId(itemid);
-				armor.setName(rs.getString("name"));
-				final String classname = rs.getString("classname");
-				armor.setClassname(classname);
-				armor.setNameId(rs.getString("name_id"));
-				if (_armorTypes.containsKey(rs.getString("type"))) {
-					armor.setType((_armorTypes.get(rs.getString("type"))).intValue());
+				armor = ItemMapper.get().mapArmor(rs);
+				final int itemid = armor.getItemId();
+				
+				final String typeStr = rs.getString("type");
+				// 處理 Type 映射
+				if (_armorTypes.containsKey(typeStr)) {
+					armor.setType((_armorTypes.get(typeStr))).intValue();
 				} else {
-					if (rs.getString("type").contains("aid_custom_")) {
-						armor.setType(Integer.parseInt(rs.getString("type").replaceAll("aid_custom_", "")) + 0x7FFF);
+					if (typeStr.contains("aid_custom_")) {
+						armor.setType(Integer.parseInt(typeStr.replaceAll("aid_custom_", "")) + 0x7FFF);
 					}
 				}
-				armor.setType2(2);
-				if (_useTypes.containsKey(rs.getString("type"))) {
-					armor.setUseType((_useTypes.get(rs.getString("type"))).intValue());
+				
+				// 處理 UseType 映射
+				if (_useTypes.containsKey(typeStr)) {
+					armor.setUseType((_useTypes.get(typeStr))).intValue();
 				} else {
-					if (rs.getString("type").contains("aid_custom_")) {
-						armor.setUseType(Integer.parseInt(rs.getString("type").replaceAll("aid_custom_", "")) + 0x7FFF);
+					if (typeStr.contains("aid_custom_")) {
+						armor.setUseType(Integer.parseInt(typeStr.replaceAll("aid_custom_", "")) + 0x7FFF);
 					}
 				}
+				
 				armor.setMaterial((_materialTypes.get(rs.getString("material"))).intValue());
-				armor.setWeight(rs.getInt("weight"));
-				armor.setGfxId(rs.getInt("invgfx"));
-				armor.setGroundGfxId(rs.getInt("grdgfx"));
-				armor.setItemDescId(rs.getInt("itemdesc_id"));
-				armor.set_ac(rs.getInt("ac"));
-				armor.set_safeenchant(rs.getInt("safenchant"));
-				armor.setUseRoyal(rs.getInt("use_royal") == 0 ? false : true);
-				armor.setUseKnight(rs.getInt("use_knight") == 0 ? false : true);
-				armor.setUseElf(rs.getInt("use_elf") == 0 ? false : true);
-				armor.setUseMage(rs.getInt("use_mage") == 0 ? false : true);
-				armor.setUseDarkelf(rs.getInt("use_darkelf") == 0 ? false : true);
-				armor.set_addstr(rs.getByte("add_str"));
-				armor.set_addcon(rs.getByte("add_con"));
-				armor.set_adddex(rs.getByte("add_dex"));
-				armor.set_addint(rs.getByte("add_int"));
-				armor.set_addwis(rs.getByte("add_wis"));
-				armor.set_addcha(rs.getByte("add_cha"));
-				armor.set_addhp(rs.getInt("add_hp"));
-				armor.set_addmp(rs.getInt("add_mp"));
-				armor.set_addhpr(rs.getInt("add_hpr"));
-				armor.set_addmpr(rs.getInt("add_mpr"));
-				armor.set_addsp(rs.getInt("add_sp"));
-				armor.setMinLevel(rs.getInt("min_lvl"));
-				armor.setMaxLevel(rs.getInt("max_lvl"));
-				armor.set_mdef(rs.getInt("m_def"));
-				armor.setDamageReduction(rs.getInt("damage_reduction"));
-				armor.setWeightReduction(rs.getInt("weight_reduction"));
-				armor.setHitModifierByArmor(rs.getInt("hit_modifier"));
-				armor.setDmgModifierByArmor(rs.getInt("dmg_modifier"));
-				armor.setBowHitModifierByArmor(rs.getInt("bow_hit_modifier"));
-				armor.setBowDmgModifierByArmor(rs.getInt("bow_dmg_modifier"));
-				armor.setHasteItem(rs.getInt("haste_item") == 0 ? false : true);
-				armor.setBless(rs.getInt("bless"));
-				armor.setTradable(rs.getInt("trade") == 0 ? true : false);
-				armor.setCantDelete(rs.getInt("cant_delete") == 1 ? true : false);
-				armor.set_defense_earth(rs.getInt("defense_earth"));
-				armor.set_defense_water(rs.getInt("defense_water"));
-				armor.set_defense_wind(rs.getInt("defense_wind"));
-				armor.set_defense_fire(rs.getInt("defense_fire"));
-				armor.set_regist_stun(rs.getInt("regist_stun"));
-				armor.set_regist_stone(rs.getInt("regist_stone"));
-				armor.set_regist_sleep(rs.getInt("regist_sleep"));
-				armor.set_regist_freeze(rs.getInt("regist_freeze"));
-				armor.set_regist_sustain(rs.getInt("regist_sustain"));
-				armor.set_regist_blind(rs.getInt("regist_blind"));
-				armor.setMaxUseTime(rs.getInt("max_use_time"));
-				armor.set_isItemAttr(rs.getInt("isItemAttr"));
-				armor.setAbility(rs.getInt("ability"));
-				ItemClass.get().addList(itemid, classname, 2);
-				result.put(new Integer(armor.getItemId()), armor);
+
+				ItemClass.get().addList(itemid, armor.getclassname(), 2);
+				result.put(new Integer(itemid), armor);
 			}
 		} catch (final NullPointerException e) {
 			_log.error("加載失敗: " + armor.getItemId(), e);

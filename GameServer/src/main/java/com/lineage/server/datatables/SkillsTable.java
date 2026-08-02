@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactory;
+import com.lineage.server.datatables.mappers.SkillMapper;
 import com.lineage.server.model.Instance.L1PcInstance;
 import com.lineage.server.templates.L1Skills;
 import com.lineage.server.utils.PerformanceTimer;
@@ -91,41 +92,8 @@ public class SkillsTable {
 
 	private void fillSkillsTable(final ResultSet rs) throws SQLException {
 		while (rs.next()) {
-			final L1Skills l1skills = new L1Skills();
-			final int skill_id = rs.getInt("skill_id");
-			l1skills.setSkillId(skill_id);
-			l1skills.setName(rs.getString("name"));
-			l1skills.setSkillLevel(rs.getInt("skill_level"));
-			l1skills.setSkillNumber(rs.getInt("skill_number"));
-			l1skills.setMpConsume(rs.getInt("mpConsume"));
-			l1skills.setHpConsume(rs.getInt("hpConsume"));
-			l1skills.setItemConsumeId(rs.getInt("itemConsumeId"));
-			l1skills.setItemConsumeCount(rs.getInt("itemConsumeCount"));
-			l1skills.setReuseDelay(rs.getInt("reuseDelay"));
-			l1skills.setBuffDuration(rs.getInt("buffDuration"));
-			l1skills.setTarget(rs.getString("target"));
-			l1skills.setTargetTo(rs.getInt("target_to"));
-			l1skills.setDamageValue(rs.getInt("damage_value"));
-			l1skills.setDamageDice(rs.getInt("damage_dice"));
-			l1skills.setDamageDiceCount(rs.getInt("damage_dice_count"));
-			l1skills.setProbabilityValue(rs.getInt("probability_value"));
-			l1skills.setProbabilityDice(rs.getInt("probability_dice"));
-			l1skills.setAttr(rs.getInt("attr"));
-			l1skills.setType(rs.getInt("type"));
-			l1skills.setLawful(rs.getInt("lawful"));
-			l1skills.setRanged(rs.getInt("ranged"));
-			l1skills.setArea(rs.getInt("area"));
-			l1skills.setThrough(rs.getBoolean("through"));
-			l1skills.setId(rs.getInt("id"));
-			l1skills.setNameId(rs.getString("nameid"));
-			l1skills.setActionId(rs.getInt("action_id"));
-			l1skills.setCastGfx(rs.getInt("castgfx"));
-			l1skills.setCastGfx2(rs.getInt("castgfx2"));
-			l1skills.setSysmsgIdHappen(rs.getInt("sysmsgID_happen"));
-			l1skills.setSysmsgIdStop(rs.getInt("sysmsgID_stop"));
-			l1skills.setSysmsgIdFail(rs.getInt("sysmsgID_fail"));
-
-			_skills.put(new Integer(skill_id), l1skills);
+			final L1Skills l1skills = SkillMapper.get().mapRow(rs);
+			_skills.put(new Integer(l1skills.getSkillId()), l1skills);
 		}
 	}
 	public void spellMastery(int playerobjid, int skillid, String skillname,

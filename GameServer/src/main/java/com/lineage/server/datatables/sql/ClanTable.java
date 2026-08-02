@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactoryLogin;
 import com.lineage.server.IdFactory;
+import com.lineage.server.datatables.mappers.ClanMapper;
 import com.lineage.server.datatables.storage.ClanStorage;
 import com.lineage.server.model.L1Clan;
 import com.lineage.server.model.Instance.L1PcInstance;
@@ -50,23 +51,8 @@ public class ClanTable implements ClanStorage {
 
 				rs = ps.executeQuery();
 				while (rs.next()) {
-					final L1Clan clan = new L1Clan();
-					final int clan_id = rs.getInt("clan_id");
-					clan.setClanId(clan_id);
-					clan.setClanName(rs.getString("clan_name"));
-					clan.setLeaderId(rs.getInt("leader_id"));
-					clan.setLeaderName(rs.getString("leader_name"));
-					clan.setCastleId(rs.getInt("hascastle"));
-					clan.setHouseId(rs.getInt("hashouse"));
-					clan.setLevel(rs.getInt("level"));
-					
-					boolean clanskill = rs.getBoolean("clanskill");
-					// 具有血盟技能
-					if (clanskill) {
-						clan.set_clanskill(clanskill);
-						final Timestamp skilltime = rs.getTimestamp("skilltime");
-						clan.set_skilltime(skilltime);
-					}
+					final L1Clan clan = ClanMapper.get().mapRow(rs);
+					final int clan_id = clan.getClanId();
 
 					WorldClan.get().storeClan(clan);
 					this._clans.put(clan_id, clan);

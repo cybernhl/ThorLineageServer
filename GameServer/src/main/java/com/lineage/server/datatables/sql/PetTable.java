@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactoryLogin;
 import com.lineage.server.datatables.PetTypeTable;
+import com.lineage.server.datatables.mappers.PetMapper;
 import com.lineage.server.datatables.storage.PetStorage;
 import com.lineage.server.model.Instance.L1NpcInstance;
 import com.lineage.server.templates.L1Pet;
@@ -45,21 +46,11 @@ public class PetTable implements PetStorage {
 
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				final int item_obj_id = rs.getInt("item_obj_id");
+				final L1Pet pet = PetMapper.get().mapRow(rs);
+				final int item_obj_id = pet.get_itemobjid();
 				
 				// 搜尋對應道具是否存在
 				if (World.get().findObject(item_obj_id) != null) {
-					final L1Pet pet = new L1Pet();
-					pet.set_itemobjid(item_obj_id);
-					pet.set_objid(rs.getInt("objid"));
-					pet.set_npcid(rs.getInt("npcid"));
-					pet.set_name(rs.getString("name"));
-					pet.set_level(rs.getInt("lvl"));
-					pet.set_hp(rs.getInt("hp"));
-					pet.set_mp(rs.getInt("mp"));
-					pet.set_exp(rs.getInt("exp"));
-					pet.set_lawful(rs.getInt("lawful"));
-
 					_pets.put(new Integer(item_obj_id), pet);
 					
 				} else {
@@ -67,17 +58,6 @@ public class PetTable implements PetStorage {
 						// 道具遺失 刪除相關資訊
 						delete(item_obj_id);
 					} else {
-						final L1Pet pet = new L1Pet();
-						pet.set_itemobjid(item_obj_id);
-						pet.set_objid(rs.getInt("objid"));
-						pet.set_npcid(rs.getInt("npcid"));
-						pet.set_name(rs.getString("name"));
-						pet.set_level(rs.getInt("lvl"));
-						pet.set_hp(rs.getInt("hp"));
-						pet.set_mp(rs.getInt("mp"));
-						pet.set_exp(rs.getInt("exp"));
-						pet.set_lawful(rs.getInt("lawful"));
-
 						_pets.put(new Integer(item_obj_id), pet);
 					}
 				}

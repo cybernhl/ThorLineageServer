@@ -21,8 +21,8 @@ public class MailMapper implements RowMapper<L1Mail> {
         
         mail.setId(rs.getInt("id"));
         mail.setType(rs.getInt("type"));
-        mail.setSenderName(rs.getString("sender_name"));
-        mail.setReceiverName(rs.getString("receiver_name"));
+        mail.setSenderName(rs.getString("sender"));
+        mail.setReceiverName(rs.getString("receiver"));
         mail.setDate(rs.getString("date"));
         mail.setReadStatus(rs.getInt("read_status"));
         

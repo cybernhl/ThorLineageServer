@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactoryLogin;
+import com.lineage.server.datatables.mappers.BoardMapper;
 import com.lineage.server.datatables.storage.BoardStorage;
 import com.lineage.server.model.Instance.L1PcInstance;
 import com.lineage.server.templates.L1Board;
@@ -45,18 +46,13 @@ public class BoardTable implements BoardStorage {
 					"SELECT * FROM `server_board` ORDER BY `id`");
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				final L1Board board = new L1Board();
-				final int id = rs.getInt("id");
+				final L1Board board = BoardMapper.get().mapRow(rs);
+				final int id = board.get_id();
 				if (id > _maxid) {
 					_maxid = id;
 				}
-				board.set_id(id);
-				board.set_name(rs.getString("name"));
-				board.set_date(rs.getString("date"));
-				board.set_title(rs.getString("title"));
-				board.set_content(rs.getString("content"));
 
-				_boards.put(board.get_id(), board);
+				_boards.put(id, board);
 			}
 
 		} catch (final SQLException e) {

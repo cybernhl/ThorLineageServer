@@ -16,6 +16,7 @@ import com.lineage.DatabaseFactoryLogin;
 import com.lineage.config.Config;
 import com.lineage.server.IdFactory;
 import com.lineage.server.datatables.CharObjidTable;
+import com.lineage.server.datatables.mappers.MailMapper;
 import com.lineage.server.datatables.storage.MailStorage;
 import com.lineage.server.model.Instance.L1PcInstance;
 import com.lineage.server.templates.L1Mail;
@@ -45,19 +46,11 @@ public class MailTable implements MailStorage {
 			pstm = con.prepareStatement("SELECT * FROM `character_mail`");
 			rs = pstm.executeQuery();
 			while (rs.next()) {
-				final L1Mail mail = new L1Mail();
-				final int id = rs.getInt("id");
-				mail.setId(id);
-				mail.setType(rs.getInt("type"));
-				String sender = rs.getString("sender");
-				mail.setSenderName(sender);
+				final L1Mail mail = MailMapper.get().mapRow(rs);
+				final int id = mail.getId();
 				
-				String receiver = rs.getString("receiver");
-				mail.setReceiverName(receiver);
-				mail.setDate(rs.getString("date"));
-				mail.setReadStatus(rs.getInt("read_status"));
-				mail.setSubject(rs.getBytes("subject"));
-				mail.setContent(rs.getBytes("content"));
+				String receiver = mail.getReceiverName();
+
 				// 檢查名稱是否以被使用
 				if (CharObjidTable.get().charObjid(receiver) != 0) {
 					_allMail.put(id, mail);

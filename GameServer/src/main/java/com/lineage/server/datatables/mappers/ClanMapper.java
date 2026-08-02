@@ -24,12 +24,12 @@ public class ClanMapper implements RowMapper<L1Clan> {
         clan.setLeaderId(rs.getInt("leader_id"));
         clan.setLeaderName(rs.getString("leader_name"));
         clan.setCastleId(rs.getInt("hascastle"));
-        clan.setHouseId(rs.getInt("hashideout"));
-        clan.setLevel(rs.getInt("clan_level"));
+        clan.setHouseId(rs.getInt("hashouse"));
+        clan.setLevel(rs.getInt("level"));
         
         // 額外字段處理 (技能相關)
         try {
-            clan.set_clanskill(rs.getInt("clanskill") != 0);
+            clan.set_clanskill(rs.getBoolean("clanskill"));
             clan.set_skilltime(rs.getTimestamp("skilltime"));
         } catch (SQLException e) {
             // 忽略缺失欄位

@@ -1,0 +1,99 @@
+這是一個非常細緻且重要的觀察。您提到的文件數量差異（71 個 Templates vs. 122 個 DAOs）揭示了專案中**「一對多」以及「特殊功能表」**的現狀。
+經過重新仔細的深層掃描與交叉比對，我整理出了這份更為完整的關係列表。
+1. Templates (POJO) 與 DataTable (DAO) 完整映射分析
+在 ThorLineageServer 中，並非每個 Table 都有對應的 Template，且有些 Template 會被多個 Table 共用。
+
+1. Templates (POJO) 與 DataTable (DAO) 完整映射分析
+在 ThorLineageServer 中，並非每個 Table 都有對應的 Template，且有些 Template 會被多個 Table 共用。
+業務模組
+數據模型 (POJO / Templates)
+資料存取 (DAO / DataTable)
+說明
+核心 NPC
+L1Npc
+NpcTable, NpcSpawnTable, NpcChatTable, NpcScoreTable
+L1Npc 是基礎，多個 Table 負責其產出與行為。
+道具系統
+L1Item
+ItemTable, ItemBoxTable, ItemUseTable, ItemTimeTable
+包含武器、防具、藥水等的定義。
+玩家角色
+L1PcInstance (及其基類)
+CharacterTable, CharObjidTable, CharOtherTable
+角色核心數據分佈於多個子表。
+持有道具
+L1ItemInstance
+CharItemsTable, CharItemsTimeTable, CharItemsPowerTable
+玩家身上道具的動態數據。
+地圖數據
+MapData
+MapsTable, MapExpTable, MapLevelTable
+地圖 ID 與其經驗加成、等級限制。
+技能/魔法
+L1Skills, L1SkillsItem
+SkillsTable, SkillsItemTable, MobSkillTable
+技能定義與其消耗道具、怪物技能。
+刷怪系統
+L1SpawnEx, L1SpawnTime
+SpawnTable, SpawnTimeTable, SpawnBossTable
+控制怪物在地圖上的重生。
+任務系統
+L1Quest, L1QuestUser
+QuestTable, QuestMapTable, CharacterQuestTable
+任務定義與玩家完成進度。
+傳送坐標
+L1TeleportLoc
+ItemTeleportTable, NPCTalkDataTable
+各種捲軸或 NPC 的傳送座標。
+商店/交易
+L1ShopS, L1ShopItem
+ShopTable, ShopXTable, ShopCnTable, DwarfShopTable
+NPC 商店與掛賣系統。
+寵物/娃娃
+L1Pet, L1Doll, L1PetType
+PetTable, PetTypeTable, DollPowerTable, PetItemTable
+寵物與魔法娃娃的屬性。
+帳號/銀行
+L1Account, L1Bank
+AccountTable, AccountBankTable, EzpayTable
+玩家帳號與其虛擬銀行、金流資訊。
+社會系統
+L1Clan, L1Mail, L1Board
+ClanTable, MailTable, BoardTable, AuctionBoardTable
+血盟、信件、公告欄與拍賣行。
+城堡/房屋
+L1Castle, L1House
+CastleTable, HouseTable
+城堡戰、房屋稅收與居住。
+活動/競賽
+L1Event, L1Gambling
+EventTable, GamblingTable, UBTable
+全服活動、賭博系統與無限大賽。
+地圖元件
+L1Trap, L1Furniture
+TrapTable, TrapsSpawn, FurnitureSpawnTable
+陷阱、家具的佈置與觸發。
+
+2. 數量差異的原因解析
+•
+輔助性 Table (無對應 Template)：
+◦
+例如 SqlError.java (紀錄錯誤)、BadIpDatabase.java (黑名單)、LogChatTable.java (對話紀錄)。
+◦
+這些 Table 主要是執行 INSERT 動作或簡單的查詢，不轉換為複雜物件，因此在 templates 資料夾中找不到對應的 POJO。
+•
+多對一關係：
+◦
+例如 ItemTable 下面可能細分了 etcitem、weapon、armor 三張 SQL 表，但它們在 Java 記憶體中最後都繼承或轉換自 L1Item 體系。
+•
+功能工廠 (Factories)：
+◦
+例如 FinalKillDropFactory.java，它是一個邏輯處理器而非單純的 DAO，但被放在 datatables 目錄下。
+3. 「轉換邏輯」抽離的可行性評估
+評估結論：完全可行，且這是模組化的「必經之路」。
+抽離方案：
+我建議為這 71 個 Template 建立專屬的 RowMapper。
+•
+優點 1：GameServer 邏輯層將不再看到 rs.getInt("npc_id") 這種代碼。
+•
+優點 2：如果您將 sql 的 Table 換成 SQLite 版，您只需要重寫 SQL 語句，而資料如何「填進」Template 的邏輯（Mapper）是可以完全複用的。

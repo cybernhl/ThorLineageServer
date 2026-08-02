@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.lineage.DatabaseFactoryLogin;
 import com.lineage.config.Config;
+import com.lineage.server.datatables.mappers.AccountMapper;
 import com.lineage.server.datatables.storage.AccountStorage;
 import com.lineage.server.templates.L1Account;
 import com.lineage.server.utils.PerformanceTimer;
@@ -209,47 +210,10 @@ public class AccountTable implements AccountStorage {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				final String login = rs.getString("login").toLowerCase();
-				final String password = rs.getString("password");
-				final Timestamp lastactive = rs.getTimestamp("lastactive");
-				final int access_level = rs.getInt("access_level");
-				final String ip = rs.getString("ip");
-				final String host = rs.getString("host");
-				final int character_slot = rs.getInt("character_slot");
-				final String spw = rs.getString("spw");
-				final int warehouse = rs.getInt("warehouse");
-				final int server_no = rs.getInt("server_no");
-				//final boolean islan = rs.getBoolean("banned");
-				final int fl = rs.getInt("滿額紀錄");
-				final int cl = rs.getInt("累儲紀錄");
-				final int cc = rs.getInt("累消紀錄");
-				final int sm = rs.getInt("累儲金額");
-				final int cm = rs.getInt("累消金額");
-
-				final int first_pay = rs.getInt("首儲紀錄");
+				final L1Account value = AccountMapper.get().mapRow(rs);
+				final String login = value.get_login();
+				value.set_countCharacters(getPlayers(login));// 計算已創人物數量
 				
-				final int countCharacters = getPlayers(login);// 計算已創人物數量
-				
-				L1Account value = new L1Account();
-				value.set_login(login);
-				value.set_password(password);
-				value.set_lastactive(lastactive);
-				value.set_access_level(access_level);
-				value.set_ip(ip);
-				value.set_mac(host);
-				value.set_character_slot(character_slot);
-				value.set_spw(spw);
-				value.set_warehouse(warehouse);
-				value.set_countCharacters(countCharacters);
-				value.set_server_no(server_no);
-				//value.set_isLoad(islan);
-				value.set_FullAmount_Log(fl);
-				value.set_CumulativeStored_Log(cl);
-				value.set_CumulativeConsumption_Log(cc);
-				value.set_StoredMoney(sm);
-				value.set_ConsumptionMoney(cm);
-
-				value.set_first_pay(first_pay);
 				return value;
 			}
 
